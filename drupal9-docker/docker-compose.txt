@@ -1,0 +1,63 @@
+version: '3.3'
+
+services:
+
+  postgres:
+    image: postgres:10
+    container_name: postgres10
+    ports:
+      - 5432:5432
+    environment: 
+      POSTGRES_DB: drupaldb
+      POSTGRES_USER: root
+      POSTGRESS_PASSWORD: password
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    restart: always
+
+  drupal:
+    image: drupal:latest
+    container_name: drupal9
+    depends_on:
+      - postgres
+    ports:
+      - "4000:80"
+    networks:
+      - internal
+      - external
+    volumes:
+      - drupal_modules:/var/www/html/modules
+      - drupal_profiles:/var/www/html/profiles
+      - drupal_themes:/var/www/html/themes
+      - drupal_sites:/var/www/html/sites
+    restart: always
+
+  webserver:
+    image: nginx
+    container_name: webserver
+    depends_on:
+      - drupal
+    restart: unless-stopped
+    ports:
+      - 81:80
+    volumes:
+      - drupal_data:/var/www/html
+    networks:
+      - external
+    restart: always
+
+networks:
+  external:
+    driver: bridge
+  internal:
+    driver: bridge
+
+volumes:
+  drupal_modules:
+  drupal_profiles:
+  drupal_themes:
+  drupal_sites:
+  db_data:
+  drupal_data:

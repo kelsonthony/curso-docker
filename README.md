@@ -196,3 +196,4 @@ docker container run -d --name nginx1 -p 80:80 nginx
 docker container cp nginx1:/usr/share/nginx/html/index.html .
 
 docker container run -d --name nginx2 -v $(pwd)/index.html:/usr/share/nginx/html/index.html -p 81:80 nginx
+
